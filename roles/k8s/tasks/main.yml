@@ -1,2 +1,52 @@
 ---
 # tasks file for k8s-master
+- name: Install modules required by containerd
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - overlay
+    - br_netfilter
+
+- name: Copy config to load needed modules on system reboot
+  ansible.builtin.copy:
+    src: containerd.conf
+    dest: /etc/modules-load.d/containerd.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Setup required sysctl params, these persist across reboots
+  ansible.builtin.copy:
+    src: 99-kubernetes-cri.conf
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Reload sysctl
+  shell:
+    cmd: sysctl --system
+
+- name: Disable swap
+  shell: swapoff -a
+
+- name: Disable swap in /etc/fstab
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    replace: '# \1'
+
+- name: Install epel-release and containerd
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - epel-release
+    - containerd
+
+- name: Prepare containerd config
+  shell: containerd config default | tee /etc/containerd/config.toml
+  notify:
+  - Restart containerd
+
