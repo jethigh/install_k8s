@@ -82,10 +82,5 @@
   loop:
     - /etc/systemd/system/kubelet.service
     - /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-
-- name: Start and enable kubelet service
-  ansible.builtin.systemd:
-    state: started
-    daemon_reload: yes
-    enabled: yes
-    name: kubelet
+  notify:
+  - Kubelet service
