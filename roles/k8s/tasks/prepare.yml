@@ -37,13 +37,27 @@
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
     replace: '# \1'
 
-- name: Install epel-release and containerd
+- name: Add docker-ce repository
+  ansible.builtin.uri:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    owner: root
+    group: root
+    mode: "0644"
+    status_code: ["200", "304"]
+
+- name: Install containerd.io
   ansible.builtin.package:
-    name: "{{ item }}"
+    name: containerd.io
     state: present
-  loop:
-    - epel-release
-    - containerd
+
+- name: Create containerd config directory
+  ansible.builtin.file:
+    path: /etc/containerd/
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
 
 - name: Prepare containerd config
   shell: containerd config default | tee /etc/containerd/config.toml
