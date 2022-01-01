@@ -1,7 +1,12 @@
 ---
-- hosts: "{{ host }}"
+- name: Run role installing kubeadm, kubectl and kubelet on each node
+  hosts: k8s
   become: true
   roles:
     - k8s
-  vars:
-          #    - doc_root: /var/www/example
+
+- name: Initialize control-plane host
+  hosts: k8s_master
+  become: true
+  roles:
+    - k8s-master

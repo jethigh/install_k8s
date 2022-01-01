@@ -61,6 +61,12 @@
 
 - name: Prepare containerd config
   shell: containerd config default | tee /etc/containerd/config.toml
+
+- name: Set containerd systemd cgroup driver 
+  ansible.builtin.lineinfile:
+    path: /etc/containerd/config.toml
+    insertafter: '^.*containerd.runtimes.runc.options]$'
+    line: '            SystemdCgroup = true'
   notify:
   - Restart containerd
 
