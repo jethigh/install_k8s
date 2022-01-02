@@ -9,4 +9,4 @@
   hosts: k8s_master
   become: true
   roles:
-    - k8s-master
+    - k8s_master

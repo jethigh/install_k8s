@@ -70,5 +70,11 @@
   notify:
   - Restart containerd
 
+- name: Add DOWNLOAD_DIR ro .bash_profile 
+  ansible.builtin.lineinfile:
+    path: /root/.bash_profile
+    insertbefore: '^export PATH$'
+    line: PATH=$PATH:/usr/local/bin
+
 - name: Flush handlers
   meta: flush_handlers
