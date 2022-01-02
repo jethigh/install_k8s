@@ -1,2 +1,3 @@
 ---
-#- name: Initialize control-plane
+- name: Initialize control-plane
+  shell: kubead init --pod-network-cidr {{POD-NETWORK-CIDR}}
