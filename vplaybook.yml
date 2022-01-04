@@ -1,12 +1,12 @@
 ---
 - name: Run role installing kubeadm, kubectl and kubelet on each node
-  hosts: k8s
+  hosts: vk8s
   become: true
   roles:
     - k8s
 
 - name: Initialize control-plane host
-  hosts: k8s_master
+  hosts: vk8s_master
   become: true
   roles:
     - k8s_master

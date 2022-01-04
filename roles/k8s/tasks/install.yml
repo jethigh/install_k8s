@@ -78,7 +78,7 @@
   ansible.builtin.lineinfile:
     path: "{{ item }}"
     regexp: '^ExecStart=/usr/bin/kubelet'
-    line: ExecStart=/usr/local/bin/kubelet
+    line: ExecStart=/usr/local/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS
   loop:
     - /etc/systemd/system/kubelet.service
     - /etc/systemd/system/kubelet.service.d/10-kubeadm.conf

@@ -1,3 +1,9 @@
 ---
 - name: Initialize control-plane
-  shell: kubead init --pod-network-cidr {{POD-NETWORK-CIDR}}
+  shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}}
+  when: ansible_processor_cores >= 2 and ansible_memtotal_mb > 1700
+
+- name: Initialize control-plane with not recommended resources
+  shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}} --ignore-preflight-errors NumCPU,Mem
+  when: ansible_processor_cores < 2 or ansible_memtotal_mb < 1700
+
