@@ -4,11 +4,11 @@
   register: cluster_reset
 
 - name: Initialize control-plane
-  shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}}
+  shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}} --control-plane-endpoint {{ control_plane_endpoint }}
   when: ansible_processor_cores >= 2 and ansible_memtotal_mb > 1700 and cluster_reset is succeeded
 
 - name: Initialize control-plane with not recommended resources
-  shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}} --ignore-preflight-errors NumCPU,Mem
+  shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}} --control-plane-endpoint {{ control_plane_endpoint }} --ignore-preflight-errors NumCPU,Mem
   when: cluster_reset is succeeded and (ansible_processor_cores < 2 or ansible_memtotal_mb < 1700)
 
 - name: Add KUBECONFIG environment variable to .bashrc and .bash_profile
@@ -22,6 +22,9 @@
 
 - name: Install calico network plugin
   shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+- name: Register join command
+  shell: kubeadm token create --print-join-command
   register: join_command
 
 - name: Make vagrant user .kube directory

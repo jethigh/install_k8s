@@ -1,0 +1,8 @@
+---  
+- name: Clean previous initialization
+  shell: kubeadm reset -f
+  register: cluster_reset
+
+- name: Join kubernetes cluster
+  shell: "{{ hostvars['centos1']['join_command']['stdout'] }}"
+  when: cluster_reset is succeeded

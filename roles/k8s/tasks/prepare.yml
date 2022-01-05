@@ -37,13 +37,19 @@
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
     replace: '# \1'
 
+- name: Disable SELinux on reboot
+  selinux:
+    state: disabled
+
 - name: Disable selinux now
   shell: setenforce 0
   ignore_errors: yes
 
-- name: Disable SELinux on reboot
-  selinux:
-    state: disabled
+- name: Disable firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
 
 - name: Add docker-ce repository
   ansible.builtin.uri:

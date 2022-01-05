@@ -13,3 +13,12 @@
   environment:
     PATH: "{{ ansible_env.PATH }}:/usr/local/bin/"
     KUBECONFIG: "/etc/kubernetes/admin.conf"
+
+- name: Initialize worker nodes
+  hosts: k8s_workers
+  become: true
+  roles:
+    - k8s_worker
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/local/bin/"
+    KUBECONFIG: "/etc/kubernetes/admin.conf"
