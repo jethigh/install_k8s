@@ -1,5 +1,5 @@
 ---
-- name: Clear previous initialization
+- name: Clean previous initialization
   shell: kubeadm reset -f
   register: cluster_reset
 
@@ -11,3 +11,31 @@
   shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}} --ignore-preflight-errors NumCPU,Mem
   when: cluster_reset is succeeded and (ansible_processor_cores < 2 or ansible_memtotal_mb < 1700)
 
+- name: Add KUBECONFIG environment variable to .bashrc and .bash_profile
+  lineinfile:
+    path: "{{ item }}"
+    insertafter: EOF
+    line: export KUBECONFIG=/etc/kubernetes/admin.conf
+  loop:
+    - /root/.bash_profile
+    - /root/.bashrc
+
+- name: Install calico network plugin
+  shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+  register: join_command
+
+- name: Make vagrant user .kube directory
+  ansible.builtin.file:
+    path: /home/vagrant/.kube/
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: "0755"
+
+- name: Copy config to vagrant .kube directory
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    remote_src: yes
+    dest: /home/vagrant/.kube/config
+    owner: vagrant
+    group: vagrant
