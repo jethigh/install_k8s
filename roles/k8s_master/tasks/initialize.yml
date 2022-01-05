@@ -1,9 +1,13 @@
 ---
+- name: Clear previous initialization
+  shell: kubeadm reset -f
+  register: cluster_reset
+
 - name: Initialize control-plane
   shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}}
-  when: ansible_processor_cores >= 2 and ansible_memtotal_mb > 1700
+  when: ansible_processor_cores >= 2 and ansible_memtotal_mb > 1700 and cluster_reset is succeeded
 
 - name: Initialize control-plane with not recommended resources
   shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}} --ignore-preflight-errors NumCPU,Mem
-  when: ansible_processor_cores < 2 or ansible_memtotal_mb < 1700
+  when: cluster_reset is succeeded and (ansible_processor_cores < 2 or ansible_memtotal_mb < 1700)
 

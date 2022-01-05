@@ -1,28 +1,47 @@
 IMAGE_NAME = "generic/centos7"
+CENTOS1_IP = '192.168.1.200'
+CENTOS2_IP = '192.168.1.201'
+CENTOS3_IP = '192.168.1.202'
+
+$script = <<-EOF
+echo "$1 centos1" >> /etc/hosts
+echo "$2 centos2" >> /etc/hosts
+echo "$3 centos3" >> /etc/hosts
+EOF
 
 Vagrant.configure("2") do |config|
   config.vm.box_version = "3.5.2"
 
   config.vm.provider "virtualbox" do |v|
-      v.memory = 2048
+      v.memory = 2024
       v.cpus = 2
   end
 
-  config.vm.define "k8s-master" do |master|
+  config.vm.define "centos1" do |master|
     master.vm.box = IMAGE_NAME
-    master.vm.network "public_network", ip: "192.168.1.200"
-    master.vm.hostname = "k8s-master"
+    master.vm.network "public_network", ip: CENTOS1_IP
+    master.vm.hostname = "centos1"
   end
  
-  config.vm.define "node-1" do |node|
+  config.vm.define "centos2" do |node|
     node.vm.box = IMAGE_NAME
-    node.vm.network "public_network", ip: "192.168.1.201"
-    node.vm.hostname = "node-1"
+    node.vm.network "public_network", ip: CENTOS2_IP
+    node.vm.hostname = "centos2"
   end
 
-  config.vm.define "node-2" do |node|
+  config.vm.define "centos3" do |node|
     node.vm.box = IMAGE_NAME
-    node.vm.network "public_network", ip: "192.168.1.202"
-    node.vm.hostname = "node-2"
+    node.vm.network "public_network", ip: CENTOS3_IP
+    node.vm.hostname = "centos3"
+    node.vm.synced_folder "./", "/vagrant/"
+    node.vm.provision "shell", inline: $script, args: [CENTOS1_IP, CENTOS2_IP, CENTOS3_IP]
+    node.vm.provision "ansible_local" do |ansible|
+      ansible.inventory_path = "/vagrant/hosts"
+      ansible.galaxy_role_file = "/vagrant/requirements.yml"
+      ansible.galaxy_roles_path = "/etc/ansible/roles"
+      ansible.galaxy_command = "sudo ansible-galaxy install --role-file=%{role_file} --roles-path=%{roles_path} --force"
+      ansible.raw_arguments = ['--private-key', '/vagrant/.vagrant/machines/centos3/virtualbox/private_key']
+      ansible.playbook = "playbook.yml"
+    end
   end
 end
