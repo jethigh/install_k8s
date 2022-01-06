@@ -4,11 +4,11 @@
   register: cluster_reset
 
 - name: Initialize control-plane
-  shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}} --control-plane-endpoint {{ control_plane_endpoint }}
+  shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}} --apiserver-advertise-address {{ APISERVER_ADVERTISE_ADDRESS }}
   when: ansible_processor_cores >= 2 and ansible_memtotal_mb > 1700 and cluster_reset is succeeded
 
 - name: Initialize control-plane with not recommended resources
-  shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}} --control-plane-endpoint {{ control_plane_endpoint }} --ignore-preflight-errors NumCPU,Mem
+  shell: kubeadm init --pod-network-cidr {{POD_NETWORK_CIDR}} --apiserver-advertise-address {{ APISERVER_ADVERTISE_ADDRESS }} --ignore-preflight-errors NumCPU,Mem
   when: cluster_reset is succeeded and (ansible_processor_cores < 2 or ansible_memtotal_mb < 1700)
 
 - name: Add KUBECONFIG environment variable to .bashrc and .bash_profile
