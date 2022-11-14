@@ -2,10 +2,10 @@
 # vars file for k8s
 # Information about correct version given from https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 # Need to check "Without a package manager" section
-CNI_VERSION: "v0.8.2"
+CNI_VERSION: "v1.1.1"
 ARCH: "amd64"
 DOWNLOAD_DIR: "/usr/local/bin"
-CRICTL_VERSION: "v1.22.0"
+CRICTL_VERSION: "v1.25.0"
 # From here https://storage.googleapis.com/kubernetes-release/release/stable.txt
-RELEASE: "v1.23.1"
+RELEASE: "v1.25.4"
 RELEASE_VERSION: "v0.4.0"
