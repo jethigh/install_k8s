@@ -1,4 +1,4 @@
 ---
 # tasks file for k8s_master
 - name: Initialize control-plane
-  include: initialize.yml
+  include_tasks: initialize.yml
