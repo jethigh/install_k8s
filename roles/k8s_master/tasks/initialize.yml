@@ -27,7 +27,7 @@
   shell: kubeadm token create --print-join-command
   register: join_command
 
-- name: Make vagrant user .kube directory
+- name: Create vagrant user .kube directory
   ansible.builtin.file:
     path: /home/vagrant/.kube/
     state: directory
