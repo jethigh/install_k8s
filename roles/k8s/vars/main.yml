@@ -9,3 +9,6 @@ CRICTL_VERSION: "v1.25.0"
 # From here https://storage.googleapis.com/kubernetes-release/release/stable.txt
 RELEASE: "v1.25.4"
 RELEASE_VERSION: "v0.4.0"
+# CRI-O
+CRIO_OS: "CentOS_8_Stream"
+CRIO_VERSION: "1.24"

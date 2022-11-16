@@ -1,7 +1,7 @@
 ---
 # tasks file for k8s
 - name: Include preparaition playbook
-  include: prepare.yml
+  include_tasks: prepare.yml
 
 - name: Include installation playbook
-  include: install.yml
+  include_tasks: install.yml

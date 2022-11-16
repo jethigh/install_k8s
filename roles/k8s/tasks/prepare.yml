@@ -5,16 +5,7 @@
     name: "{{ item }}"
     state: present
   loop:
-    - overlay
     - br_netfilter
-
-- name: Copy config to load needed modules on system reboot
-  ansible.builtin.copy:
-    src: containerd.conf
-    dest: /etc/modules-load.d/containerd.conf
-    owner: root
-    group: root
-    mode: "0644"
 
 - name: Setup required sysctl params, these persist across reboots
   ansible.builtin.copy:
@@ -51,42 +42,46 @@
     state: stopped
     enabled: no
 
-- name: Add docker-ce repository
+- name: Install requred packages
+  ansible.builtin.package:
+    name: '{{ item }}'
+    state: present
+  loop:
+    - conntrack-tools
+    - iproute-tc
+
+- name: Add first CRI-O repository
   ansible.builtin.uri:
-    url: https://download.docker.com/linux/centos/docker-ce.repo
-    dest: /etc/yum.repos.d/docker-ce.repo
+    url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{CRIO_OS}}/devel:kubic:libcontainers:stable.repo"
+    dest: /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo
     owner: root
     group: root
     mode: "0644"
     status_code: ["200", "304"]
 
-- name: Install containerd.io
+- name: Add second CRI-O repository
+  ansible.builtin.uri:
+    url: "https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{CRIO_VERSION}}/{{CRIO_OS}}/devel:kubic:libcontainers:stable:cri-o:{{CRIO_VERSION}}.repo"
+    dest: "/etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:{{CRIO_VERSION}}.repo"
+    owner: root
+    group: root
+    mode: "0644"
+    status_code: ["200", "304"]
+
+- name: Install CRI-O
   ansible.builtin.package:
     name: '{{ item }}'
     state: present
   loop:
-    - containerd.io
-    - conntrack
-    - socat
-
-- name: Create containerd config directory
-  ansible.builtin.file:
-    path: /etc/containerd/
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: Prepare containerd config
-  shell: containerd config default | tee /etc/containerd/config.toml
-
-- name: Set containerd systemd cgroup driver 
-  ansible.builtin.lineinfile:
-    path: /etc/containerd/config.toml
-    insertafter: '^.*containerd.runtimes.runc.options]$'
-    line: '            SystemdCgroup = true'
+    - cri-o
   notify:
-  - Restart containerd
+  - Restart crio
+
+- name: keyPaths Fix
+  ansible.builtin.replace:
+    path: /etc/containers/policy.json
+    regexp: '^.*keyPaths.*'
+    replace: '                    "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"'
 
 - name: Add DOWNLOAD_DIR to root's .bash_profile for interactive login shell
   ansible.builtin.lineinfile:

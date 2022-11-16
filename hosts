@@ -43,13 +43,13 @@
 #db-[99:101]-node.example.com
 
 [k8s]
-centos1
-centos2
-centos3
+master
+worker1
+worker2
 
 [k8s_master]
-centos1
+master
 
 [k8s_workers]
-centos2
-centos3
+worker1
+worker2

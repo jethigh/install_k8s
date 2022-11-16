@@ -1,9 +1,9 @@
 ---
 # handlers file for k8s-master
-- name: Restart containerd
+- name: Restart crio
   ansible.builtin.systemd:
-    name: containerd
-    state: restarted
+    name: crio
+    state: started
     enabled: yes
 
 - name: Kubelet service
