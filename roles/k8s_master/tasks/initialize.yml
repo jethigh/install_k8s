@@ -42,3 +42,6 @@
     dest: /home/vagrant/.kube/config
     owner: vagrant
     group: vagrant
+
+- name: Enable kubectl bash completion
+  shell: kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null

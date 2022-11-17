@@ -6,3 +6,6 @@
 - name: Join kubernetes cluster
   shell: "{{ hostvars['master']['join_command']['stdout'] }}"
   when: cluster_reset is succeeded
+
+- name: Enable kubectl bash completion
+  shell: kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
