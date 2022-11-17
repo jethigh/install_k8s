@@ -6,6 +6,7 @@
     state: present
   loop:
     - br_netfilter
+    - overlay
 
 - name: Setup required sysctl params, these persist across reboots
   ansible.builtin.copy:
@@ -68,12 +69,13 @@
     mode: "0644"
     status_code: ["200", "304"]
 
-- name: Install CRI-O
+- name: Install CRI-O and jq
   ansible.builtin.package:
     name: '{{ item }}'
     state: present
   loop:
     - cri-o
+    - jq
   notify:
   - Restart crio
 
