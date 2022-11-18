@@ -40,14 +40,14 @@ Vagrant.configure("2") do |config|
     node.vm.provision "shell", inline: $script, args: [MASTER_IP, WORKER1_IP, WORKER2_IP]
     node.vm.provision "shell", inline: "cat /vagrant/keys/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys"
     node.vm.provision "ansible_local" do |ansible|
-      ansible.inventory_path = "/vagrant/hosts"
+      ansible.inventory_path = "/vagrant/ansible/hosts"
       ansible.limit = "all"
-      ansible.galaxy_role_file = "/vagrant/requirements.yml"
+      ansible.galaxy_role_file = "/vagrant/ansible/requirements.yml"
       ansible.galaxy_roles_path = "/etc/ansible/roles"
       ansible.galaxy_command = "sudo ansible-galaxy install --role-file=%{role_file} --roles-path=%{roles_path} --force"
       ansible.raw_arguments = ['--private-key', '/vagrant/keys/id_rsa']
       ansible.extra_vars = { APISERVER_ADVERTISE_ADDRESS: MASTER_IP }
-      ansible.playbook = "playbook.yml"
+      ansible.playbook = "ansible/playbook.yml"
     end
   end
 end
