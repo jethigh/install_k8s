@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
     master.vm.box = IMAGE_NAME
     master.vm.network "public_network", ip: MASTER_IP
     master.vm.hostname = "master"
-    master.vm.synced_folder "./", "/vagrant/"
+    master.vm.synced_folder "./", "/vagrant"
     master.vm.provision "shell", inline: "cat /vagrant/keys/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys"
   end
  
@@ -28,15 +28,15 @@ Vagrant.configure("2") do |config|
     node.vm.box = IMAGE_NAME
     node.vm.network "public_network", ip: WORKER1_IP
     node.vm.hostname = "worker1"
-    node.vm.synced_folder "./", "/vagrant/"
+    node.vm.synced_folder "./", "/vagrant"
     node.vm.provision "shell", inline: "cat /vagrant/keys/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys"
   end
 
   config.vm.define "worker2" do |node|
     node.vm.box = IMAGE_NAME
     node.vm.network "public_network", ip: WORKER2_IP
-    node.vm.hostname = "wroker2"
-    node.vm.synced_folder "./", "/vagrant/"
+    node.vm.hostname = "worker2"
+    node.vm.synced_folder "./", "/vagrant"
     node.vm.provision "shell", inline: $script, args: [MASTER_IP, WORKER1_IP, WORKER2_IP]
     node.vm.provision "shell", inline: "cat /vagrant/keys/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys"
     node.vm.provision "ansible_local" do |ansible|

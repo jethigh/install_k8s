@@ -26,8 +26,10 @@
 - name: Disable swap in /etc/fstab
   replace:
     path: /etc/fstab
-    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
-    replace: '# \1'
+    #regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    #replace: '# \1'
+    regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+    replace: '#\1\2\3swap\4'
 
 - name: Disable SELinux on reboot
   selinux:
